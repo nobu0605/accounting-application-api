@@ -24,7 +24,7 @@ jobs:
       run: |
         git push heroku HEAD:master -f
     - name: Execute migration
-      run: heroku run php artisan migrate
+      run: heroku run php artisan migrate -a accounting-application-api
 # on:
 #   push:
 #     branches: [ master ]
