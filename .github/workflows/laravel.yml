@@ -14,7 +14,7 @@ jobs:
     - name: Generate key
       run: php artisan key:generate
     - name: Execute Migration & Seed
-      run: php artisan migrate:refresh --seed --force
+      run: php artisan migrate:fresh --database=mysql_test
     - name: unit test
       run: composer test 
 
