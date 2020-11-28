@@ -13,7 +13,7 @@ jobs:
           - 3306
         options: --health-cmd "mysqladmin ping -h localhost" --health-interval 20s --health-timeout 10s --health-retries 10
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: no
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_DATABASE: laravel
 
     steps:
