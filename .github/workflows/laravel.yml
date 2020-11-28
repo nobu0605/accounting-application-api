@@ -36,7 +36,7 @@ jobs:
     - name: Execute Migration & Seed
       run: php artisan migrate:fresh --database=mysql_test
     - name: passport install
-      run: php artisan passport:install --database=mysql_test
+      run: php artisan passport:install 
     - name: unit test
       run: composer test 
 
