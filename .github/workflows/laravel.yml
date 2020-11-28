@@ -15,12 +15,11 @@ jobs:
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_DATABASE: test-accounting-application-db
-          DB_PORT: ${{ job.services.mysql.ports[3306] }}
 
     steps:
     - uses: actions/checkout@v1
     - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.githubActions', '.env');"
+      run: php -r "file_exists('.env') || file_put_contents('.env', str_replace('DB_PORT=3306', 'DB_PORT=${{ job.services.mysql.ports['3306'] }}', file_get_contents('.env.githubActions')));"
     - name: Cache vendor
       id: cache-vendor
       uses: actions/cache@v1
