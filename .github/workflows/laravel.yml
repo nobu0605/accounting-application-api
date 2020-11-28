@@ -9,6 +9,8 @@ jobs:
     - uses: actions/checkout@v1
     - name: composer install
       run: composer install 
+    - name: unit test
+      run: composer test 
 
   master_task:
     if: github.ref == 'refs/heads/master'
