@@ -5,6 +5,17 @@ on: [push]
 jobs:
   test_task:
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3306
+        options: --health-cmd "mysqladmin ping -h localhost" --health-interval 20s --health-timeout 10s --health-retries 10
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: no
+          MYSQL_DATABASE: laravel
+
     steps:
     - uses: actions/checkout@v1
     - name: Copy .env
