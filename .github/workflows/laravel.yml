@@ -7,8 +7,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.githubActions', '.env');"
     - name: composer install
       run: composer install 
+    - name: Generate key
+      run: php artisan key:generate
+    - name: Execute Migration & Seed
+      run: php artisan migrate:refresh --seed --force
     - name: unit test
       run: composer test 
 
