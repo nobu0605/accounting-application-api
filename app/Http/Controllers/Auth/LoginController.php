@@ -50,7 +50,7 @@ class LoginController extends Controller
 
         if (auth()->attempt($credentials)) {
             $user = auth()->user();
-            dd($user);
+            // dd($user);
             dd($user->createToken("Token User ID $user->id"));
             dd($user->createToken("Token User ID $user->id")->accessToken);
             // $token = $user->createToken("Token User ID $user->id")->accessToken;
