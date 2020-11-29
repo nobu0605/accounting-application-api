@@ -50,8 +50,9 @@ class LoginController extends Controller
 
         if (auth()->attempt($credentials)) {
             $user = auth()->user();
-            $token = $user->createToken("Token User ID $user->id")->accessToken;
-            return ['token' => $token];
+            var_dump($user);
+            // $token = $user->createToken("Token User ID $user->id")->accessToken;
+            return ['token' => $user];
         }
 
         return response([
