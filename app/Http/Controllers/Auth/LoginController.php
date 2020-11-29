@@ -52,7 +52,7 @@ class LoginController extends Controller
             $user = auth()->user();
             var_dump($user);
             // $token = $user->createToken("Token User ID $user->id")->accessToken;
-            return ['token' => $user];
+            return ['token' => $user->createToken("Token User ID $user->id")->accessToken];
         }
 
         return response([
