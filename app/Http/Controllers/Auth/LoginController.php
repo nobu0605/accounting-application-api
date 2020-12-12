@@ -52,10 +52,14 @@ class LoginController extends Controller
             $user = auth()->user();
             $token = $user->createToken("Token User ID $user->id")->accessToken;
             return ['token' => $token];
+        } elseif (!auth()->attempt($credentials)) {
+            return response([
+                'message' => 'Unauthenticated.'
+            ], 401);
         }
 
         return response([
-            'message' => 'Unauthenticated.'
-        ], 401);
+            'message' => 'Internal server error.'
+        ], 500);
     }
 }
