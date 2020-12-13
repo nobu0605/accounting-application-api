@@ -14,7 +14,10 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $user = $request->user();
+        $user = [
+            "id" => $request->user()->id,
+            "name" => $request->user()->name,
+        ];
         return $this->jsonResponse($user);
     }
 
