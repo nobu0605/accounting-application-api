@@ -26,6 +26,8 @@ jobs:
       with:
         path: vendor
         key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
+    - name: composer update
+      run: composer update
     - name: Install Dependencies
       if: steps.cache-vendor.outputs.cache-hit != 'true'
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
