@@ -18,6 +18,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.3.2'
     - name: Copy .env
       run: php -r "file_exists('.env') || file_put_contents('.env', str_replace('DB_PORT=3306', 'DB_PORT=${{ job.services.mysql.ports['3306'] }}', file_get_contents('.env.githubActions')));"
     - name: Cache vendor
