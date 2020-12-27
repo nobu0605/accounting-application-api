@@ -2,7 +2,7 @@
 namespace Tests;
 
 use Tests\TestCase;
-use App\User;
+use App\Models\User;
 use Laravel\Passport\ClientRepository;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
