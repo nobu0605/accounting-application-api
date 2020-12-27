@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\User;
+use App\Company;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -69,5 +71,42 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+    }
+
+    protected function register(Request $request)
+    {
+        try {
+            $company = Company::create([
+                'name' => $request['company_name'],
+                'industry_class' => $request['industry_class'],
+                'number_of_employees' => $request['number_of_employees'],
+                'fiscal_start_date' => $request['fiscal_start_date'],
+                'fiscal_end_date' => $request['fiscal_end_date'],
+                'founded_date' => $request['founded_date'],
+            ]);
+            User::create([
+                'company_id' => $company->id,
+                'name' => $request['user_name'],
+                'email' => $request['email'],
+                'password' => Hash::make($request['password']),
+            ]);
+
+            return response([
+                'message' => 'Registered successfully.'
+            ], 200);
+        } catch (\Illuminate\Database\QueryException $e) {
+            $errorCode = $e->errorInfo[1];
+            if ($errorCode == '1062') {
+                return response([
+                    'message' => 'Duplicate Entry.',
+                    'isDuplicate' => true,
+                ], 500);
+                ;
+            }
+            return response([
+                    'message' => 'Internal server error.'
+                ], 500);
+            ;
+        }
     }
 }
