@@ -7,6 +7,7 @@ use Faker\Generator as Faker;
 
 $factory->define(Company::class, function (Faker $faker) {
     return [
+        'id' => 1,
         'name' => $faker->company,
         'industry_class' => 'IT',
         'number_of_employees' => $faker->randomDigit,
