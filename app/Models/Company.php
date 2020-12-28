@@ -3,12 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Passport\HasApiTokens;
 
 class Company extends Model
 {
-    use HasApiTokens;
-
     protected $fillable = [
         'name',
         'industry_class',
@@ -17,4 +14,9 @@ class Company extends Model
         'fiscal_end_date',
         'founded_date',
     ];
+
+    public function users()
+    {
+        return $this->hasMany('App\Models\User');
+    }
 }

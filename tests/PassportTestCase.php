@@ -3,6 +3,7 @@ namespace Tests;
 
 use Tests\TestCase;
 use App\Models\User;
+use App\Models\Company;
 use Laravel\Passport\ClientRepository;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -35,6 +36,7 @@ class PassportTestCase extends TestCase
         ]);
         
         // ユーザーと、それに紐づく認証TokenをDBに作成
+        factory(Company::class)->create();
         $this->user = factory(User::class)->create();
         $token = $this->user->createToken('TestToken', $this->scopes)->accessToken;
 

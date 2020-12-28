@@ -14,7 +14,10 @@ class AddCompanyIdToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('company_id')->after('id');
+            $table->bigInteger('company_id')->unsigned()->after('id');
+            $table->foreign('company_id')
+            ->references('id')->on('companies')
+            ->onDelete('cascade');
         });
     }
 
@@ -26,6 +29,7 @@ class AddCompanyIdToUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign('users_company_id_foreign');
             $table->dropColumn('company_id');
         });
     }
