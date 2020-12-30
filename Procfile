@@ -1,2 +1,2 @@
-release: php artisan migrate --force && php artisan passport:keys
+release: composer install && php artisan migrate --force && php artisan db:seed --force
 web: vendor/bin/heroku-php-apache2 public/
