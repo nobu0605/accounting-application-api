@@ -58,7 +58,4 @@ jobs:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       run: git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
     - name: Deploy to Heroku
-      run: |
-        git push heroku HEAD:master -f
-    - name: Execute migration
-      run: heroku run php artisan migrate -a ${{ secrets.HEROKU_APP_NAME }}
+      run: git push heroku HEAD:master -f

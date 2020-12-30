@@ -6,6 +6,10 @@ Route::middleware('auth:api')->group(function () {
     ->name('user');
     Route::get('/company', 'CompanyController@getCompany')
     ->name('company');
+    Route::get('/journals/{company_id}', 'JournalController@getAllJournals')
+    ->name('journals');
+    Route::get('/accounts/{company_id}', 'AccountController@getAllAccounts')
+    ->name('accounts');
 });
 
 Route::post('/login', 'Auth\LoginController@login')->name('login');
