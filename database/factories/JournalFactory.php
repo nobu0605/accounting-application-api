@@ -12,7 +12,7 @@ $factory->define(Journal::class, function (Faker $faker) {
     $creditDefaultAccounts = $faker->shuffleArray($defaultAccounts);
 
     return [
-        'company_id'  => 11,
+        'company_id'  => 1,
         'deal_date'  => $faker->dateTime,
         'debit_account_key'  => $debitDefaultAccounts[0]['account_key'],
         'debit_sub_account_key'  => $faker->company,
