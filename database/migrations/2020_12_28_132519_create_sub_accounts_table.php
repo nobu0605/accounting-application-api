@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAccountsTable extends Migration
+class CreateSubAccountsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,15 @@ class CreateAccountsTable extends Migration
      */
     public function up()
     {
-        Schema::create('accounts', function (Blueprint $table) {
+        Schema::create('sub_accounts', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('company_id')->unsigned();
+            $table->bigInteger('account_id')->unsigned();
             $table->string('name');
-            $table->string('account_key');
-            $table->string('classification');
-            $table->boolean('is_default_account');
+            $table->string('sub_account_key');
             $table->timestamps();
-            $table->unique(['company_id', 'account_key']);
-            $table->foreign('company_id')
-            ->references('id')->on('companies')
+            $table->unique(['account_id', 'sub_account_key']);
+            $table->foreign('account_id')
+            ->references('id')->on('accounts')
             ->onDelete('cascade');
         });
     }
@@ -35,6 +33,6 @@ class CreateAccountsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('accounts');
+        Schema::dropIfExists('sub_accounts');
     }
 }

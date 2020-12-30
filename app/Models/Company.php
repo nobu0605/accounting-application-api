@@ -19,4 +19,14 @@ class Company extends Model
     {
         return $this->hasMany('App\Models\User');
     }
+
+    public function accounts()
+    {
+        return $this->hasMany('App\Models\Account');
+    }
+
+    public function journals()
+    {
+        return $this->hasMany('App\Models\Journal');
+    }
 }
