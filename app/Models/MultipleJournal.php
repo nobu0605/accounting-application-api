@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Journal extends Model
+class MultipleJournal extends Model
 {
     protected $fillable = [
         'company_id',
+        'journal_id',
+        'multiple_journal_index',
         'deal_date',
         'debit_account_key',
         'debit_sub_account_key',
@@ -16,16 +18,15 @@ class Journal extends Model
         'credit_sub_account_key',
         'credit_amount',
         'remark',
-        'has_multiple_journal',
     ];
+
+    public function journal()
+    {
+        return $this->belongsTo('App\Models\Journal');
+    }
 
     public function company()
     {
         return $this->belongsTo('App\Models\Company');
-    }
-
-    public function multipleJournals()
-    {
-        return $this->hasMany('App\Models\MultipleJournal');
     }
 }

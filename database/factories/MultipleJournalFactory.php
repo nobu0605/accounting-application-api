@@ -2,10 +2,10 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Models\Journal;
+use App\Models\MultipleJournal;
 use Faker\Generator as Faker;
 
-$factory->define(Journal::class, function (Faker $faker) {
+$factory->define(MultipleJournal::class, function (Faker $faker) {
     $amount = $faker->numberBetween(1000, 200000);
     $defaultAccounts = config('constants.DEFAULT_ACCOUNTS');
     $debitDefaultAccounts = $faker->shuffleArray($defaultAccounts);
@@ -13,6 +13,8 @@ $factory->define(Journal::class, function (Faker $faker) {
 
     return [
         'company_id'  => 1,
+        'journal_id'  => 6,
+        'multiple_journal_index' => 3,
         'deal_date'  => $faker->dateTime,
         'debit_account_key'  => $debitDefaultAccounts[0]['account_key'],
         'debit_sub_account_key'  => $faker->company,
@@ -21,6 +23,5 @@ $factory->define(Journal::class, function (Faker $faker) {
         'credit_sub_account_key'  => $faker->company,
         'credit_amount'  => $amount,
         'remark'  => $faker->word,
-        'has_multiple_journal'  => false,
     ];
 });

@@ -29,4 +29,9 @@ class Company extends Model
     {
         return $this->hasMany('App\Models\Journal');
     }
+
+    public function multipleJournals()
+    {
+        return $this->hasMany('App\Models\MultipleJournal');
+    }
 }
