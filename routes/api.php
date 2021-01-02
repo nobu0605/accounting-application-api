@@ -12,6 +12,8 @@ Route::middleware('auth:api')->group(function () {
     ->name('journals/new');
     Route::get('accounts/{company_id}', 'AccountController@getAllAccounts')
     ->name('accounts');
+    Route::get('report/{company_id}', 'ReportController@getFinancialStatementRatios')
+    ->name('report');
 });
 
 Route::post('/login', 'Auth\LoginController@login')->name('login');
