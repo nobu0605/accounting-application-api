@@ -7,6 +7,7 @@ use App\Models\MultipleJournal;
 use App\Models\Account;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Company;
 
 class JournalController extends Controller
 {
@@ -15,8 +16,12 @@ class JournalController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getAllJournals(int $companyId)
+    public function getAllJournals(int $companyId): object
     {
+        $company = Company::select('fiscal_start_date', 'fiscal_end_date')
+        ->where('id', $companyId)
+        ->first();
+
         $subQuery = Journal::from('journals as j')
         ->select(
             'j.id',
@@ -32,7 +37,8 @@ class JournalController extends Controller
             DB::raw('1 as multiple_journal_index'),
             DB::raw('false as is_multiple_journal')
         )
-        ->where('company_id', $companyId);
+        ->where('company_id', $companyId)
+        ->whereBetween('deal_date', [$company->fiscal_start_date, $company->fiscal_end_date]);
 
         $journals = MultipleJournal::from('multiple_journals as m')
         ->select(
@@ -50,6 +56,7 @@ class JournalController extends Controller
             DB::raw('true as is_multiple_journal')
         )
         ->where('company_id', $companyId)
+        ->whereBetween('deal_date', [$company->fiscal_start_date, $company->fiscal_end_date])
         ->UnionAll($subQuery)
         ->orderBy('deal_date', 'desc')
         ->orderBy('id', 'asc')
@@ -92,7 +99,7 @@ class JournalController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function registerJournal(Request $request)
+    public function registerJournal(Request $request): object
     {
         try {
             $journal =  Journal::create([

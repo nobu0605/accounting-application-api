@@ -14,6 +14,8 @@ Route::middleware('auth:api')->group(function () {
     ->name('accounts');
     Route::get('report/{company_id}', 'ReportController@getFinancialStatementRatios')
     ->name('report');
+    Route::get('financial-statement/{company_id}', 'FinancialStatementController@getFinancialStatement')
+    ->name('financial-statement');
 });
 
 Route::post('/login', 'Auth\LoginController@login')->name('login');
