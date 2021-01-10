@@ -6,10 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Journal;
 use App\Models\MultipleJournal;
 use Illuminate\Support\Facades\DB;
+use App\Models\Company;
 
 class ReportController extends Controller
 {
-    private function getTotalAmount(string $side, int $companyId)
+    private function getClassAmounts(string $side, int $companyId): array
     {
         $classificationAmounts = [
             'sales' => 0,
@@ -26,6 +27,10 @@ class ReportController extends Controller
             'equity' => 0
         ];
 
+        $company = Company::select('fiscal_start_date', 'fiscal_end_date')
+        ->where('id', $companyId)
+        ->first();
+
         $subQuery = Journal::from('journals as j')
         ->select(
             "j.{$side}_amount",
@@ -33,7 +38,8 @@ class ReportController extends Controller
         )
         ->leftjoin('accounts as a', "j.{$side}_account_key", '=', 'a.account_key')
         ->where('j.company_id', $companyId)
-        ->where('a.company_id', $companyId);
+        ->where('a.company_id', $companyId)
+        ->whereBetween('deal_date', [$company->fiscal_start_date, $company->fiscal_end_date]);
 
         $journals = MultipleJournal::from('multiple_journals as m')
         ->select(
@@ -43,6 +49,7 @@ class ReportController extends Controller
         ->leftjoin('accounts as a', "m.{$side}_account_key", '=', 'a.account_key')
         ->where('m.company_id', $companyId)
         ->where('a.company_id', $companyId)
+        ->whereBetween('deal_date', [$company->fiscal_start_date, $company->fiscal_end_date])
         ->UnionAll($subQuery);
 
         $totalAmounts = DB::query()->fromSub($journals, 'journals')
@@ -57,7 +64,7 @@ class ReportController extends Controller
         return $classificationAmounts;
     }
 
-    private function calculateAmounts($targetAmount, $amountToDeduct, string $side)
+    private function calculateActualAmounts(array $targetAmounts, array $amountsToDeduct, string $side): array
     {
         $classifications = [
             'debit' => [
@@ -78,13 +85,13 @@ class ReportController extends Controller
 
         $actualAmounts = [];
         foreach ($classifications[$side] as $classification) {
-            $actualAmounts[$classification] = $targetAmount[$classification] - $amountToDeduct[$classification];
+            $actualAmounts[$classification] = $targetAmounts[$classification] - $amountsToDeduct[$classification];
         }
 
         return $actualAmounts;
     }
 
-    private function calculateRatio($actualAmounts, string $targetClass)
+    private function calculateRatio(array $actualAmounts, string $targetClass): array
     {
         $classifications = [
             'assets' => [
@@ -119,13 +126,13 @@ class ReportController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getFinancialStatementRatios(int $companyId)
+    public function getFinancialStatementRatios(int $companyId): object
     {
-        $debitTotalAmount = $this->getTotalAmount('debit', $companyId);
-        $creditTotalAmount = $this->getTotalAmount('credit', $companyId);
+        $debitTotalAmounts = $this->getClassAmounts('debit', $companyId);
+        $creditTotalAmounts = $this->getClassAmounts('credit', $companyId);
         
-        $actualDebitAmounts = $this->calculateAmounts($debitTotalAmount, $creditTotalAmount, 'debit');
-        $actualCreditAmounts = $this->calculateAmounts($creditTotalAmount, $debitTotalAmount, 'credit');
+        $actualDebitAmounts = $this->calculateActualAmounts($debitTotalAmounts, $creditTotalAmounts, 'debit');
+        $actualCreditAmounts = $this->calculateActualAmounts($creditTotalAmounts, $debitTotalAmounts, 'credit');
 
         $assetsRatios = $this->calculateRatio($actualDebitAmounts, 'assets');
         $liabilitiesAndEquityRatios = $this->calculateRatio($actualCreditAmounts, 'liabilities_and_equity');
