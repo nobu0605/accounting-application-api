@@ -12,7 +12,7 @@ class AccountController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getAllAccounts(int $companyId)
+    public function getAllAccounts(int $companyId): object
     {
         $accounts = Account::select(
             'id',

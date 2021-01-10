@@ -9,6 +9,7 @@ return [
         'non_operating_expenses',
         'special_income',
         'special_expenses',
+        'income_taxes',
         'current_assets',
         'non_current_assets',
         'current_liabilities',
@@ -280,6 +281,11 @@ return [
             'name' => '利益剰余金',
             'classification' => 'equity',
             'account_key' => 'retained_earnings'
+        ],
+        'income_taxes_current'=> [
+            'name' => '法人税・住民税および事業税',
+            'classification' => 'income_taxes',
+            'account_key' => 'income_taxes_current'
         ],
     ]
 ];

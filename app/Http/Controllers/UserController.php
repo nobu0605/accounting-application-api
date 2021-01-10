@@ -13,7 +13,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getUser(Request $request)
+    public function getUser(Request $request): object
     {
         $companyId = $request->user()->company_id;
         $result = Company::find($companyId);
