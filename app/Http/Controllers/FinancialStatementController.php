@@ -136,14 +136,14 @@ class FinancialStatementController extends Controller
 
         // BS
         $assetsTotalAmount = $actualDebitAmounts['current_assets_total'] + $actualDebitAmounts['non_current_assets_total'];
-        $liabilitieTotalAmount = $actualCreditAmounts['current_liabilities_total'] + $actualCreditAmounts['non_current_liabilities_total'];
-        $liabilitiesAndEquityTotalAmount = $liabilitieTotalAmount + $actualCreditAmounts['equity_total'] + $netIncome;
+        $liabilitiesTotalAmount = $actualCreditAmounts['current_liabilities_total'] + $actualCreditAmounts['non_current_liabilities_total'];
+        $liabilitiesAndEquityTotalAmount = $liabilitiesTotalAmount + $actualCreditAmounts['equity_total'] + $netIncome;
 
         $actualAmounts = array_merge($actualDebitAmounts, $actualCreditAmounts);
 
         return [
             'assets_total_amount' => $assetsTotalAmount,
-            'liabilities_total_amount' => $liabilitieTotalAmount,
+            'liabilities_total_amount' => $liabilitiesTotalAmount,
             'liabilities_and_equity_total_amount' => $liabilitiesAndEquityTotalAmount,
             'gross_profit' => $grossProfit,
             'operating_income' => $operatingIncome,
