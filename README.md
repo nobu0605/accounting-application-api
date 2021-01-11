@@ -4,10 +4,12 @@
 `git clone https://github.com/Laradock/laradock.git`
 
 ### Reference
-Please refer to the detail of the procedure from this link.
+Please refer to the detail of the procedure from this link.  
 https://laradock.io/
 
-### `composer install`
+### Install libraries
+`composer install`
 
-### `php artisan migrate`
+### Make migration
+`php artisan migrate`
  
