@@ -28,8 +28,8 @@ class HomeController extends Controller
         foreach ($cashEachMonthAmounts as $index => $cashEachMonthAmount) {
             $totalCashEachMonthAmounts[] = array(
                 date('Y-m', strtotime($cashEachMonthAmount['month'])),
-                $cashEachMonthAmount['amount'] -
-                $savingsAccountsEachMonthAmounts[$index]['amount'] -
+                $cashEachMonthAmount['amount'] +
+                $savingsAccountsEachMonthAmounts[$index]['amount'] +
                 $checkingAccountsEachMonthAmounts[$index]['amount']
             );
         }
