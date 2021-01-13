@@ -132,10 +132,10 @@ return [
             'classification' => 'current_assets',
             'account_key' => 'cash'
         ],
-        'checking_account'=> [
+        'checking_accounts'=> [
             'name' => '当座預金',
             'classification' => 'current_assets',
-            'account_key' => 'checking_account'
+            'account_key' => 'checking_accounts'
         ],
         'savings_accounts'=> [
             'name' => '普通預金',
