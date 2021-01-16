@@ -24,12 +24,12 @@ class HomeController extends Controller
         $savingsAccountsEachMonthAmounts = $accountAmount->getMonthAccountAmounts($companyId, 'savings_accounts', 'debit');
         $checkingAccountsEachMonthAmounts = $accountAmount->getMonthAccountAmounts($companyId, 'checking_accounts', 'debit');
 
-        $totalCashEachMonthAmounts = [array('Year', '現預金残高')];
+        $totalCashEachMonthAmounts = [array('', '')];
         foreach ($cashEachMonthAmounts as $index => $cashEachMonthAmount) {
             $totalCashEachMonthAmounts[] = array(
                 date('Y-m', strtotime($cashEachMonthAmount['month'])),
-                $cashEachMonthAmount['amount'] -
-                $savingsAccountsEachMonthAmounts[$index]['amount'] -
+                $cashEachMonthAmount['amount'] +
+                $savingsAccountsEachMonthAmounts[$index]['amount'] +
                 $checkingAccountsEachMonthAmounts[$index]['amount']
             );
         }
