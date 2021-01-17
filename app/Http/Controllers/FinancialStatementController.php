@@ -115,7 +115,7 @@ class FinancialStatementController extends Controller
         return $classAmounts;
     }
 
-    public function getFinancialStatement(int $companyId)
+    public function getFinancialStatement(int $companyId): array
     {
         $debitTotalAmounts = $this->getAccountAmounts('debit', $companyId);
         $creditTotalAmounts = $this->getAccountAmounts('credit', $companyId);
