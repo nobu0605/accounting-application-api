@@ -150,7 +150,8 @@ class ReportController extends Controller
             'equity_ratio' => $liabilitiesAndEquityRatios['equity'],
             'cost_of_goods_sold_ratio' => $incomeStatementRatios['cost_of_goods_sold'],
             'selling_general_admin_expenses_ratio' => $incomeStatementRatios['selling_general_admin_expenses'],
-            'operating_income_ratio' => $incomeStatementRatios['operating_income']
+            'operating_income_ratio' => $incomeStatementRatios['operating_income'],
+            'is_fetched' => true
         ]);
     }
 }
