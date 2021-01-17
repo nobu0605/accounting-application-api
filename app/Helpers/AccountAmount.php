@@ -46,12 +46,12 @@ class AccountAmount
         ->whereBetween('deal_date', [$company->fiscal_start_date, $company->fiscal_end_date])
         ->UnionAll($subQuery);
 
-        $totalAmounts = DB::query()->fromSub($journals, 'journals')
+        $accountAmount = DB::query()->fromSub($journals, 'journals')
         ->select("{$side}_account_key as account_key", 'classification', DB::raw("SUM({$side}_amount) as amount"))
         ->groupBy("{$side}_account_key")
         ->first();
-        
-        return $totalAmounts;
+
+        return $accountAmount;
     }
 
     public function getActualAccountAmount(int $companyId, string $accountKey, string $sideOfAccount): int
@@ -72,24 +72,22 @@ class AccountAmount
         return $actualAccountAmount;
     }
 
-    private function getEachMonthAccountAmounts(string $side, int $companyId, string $accountKey, string $endMonth)
+    private function getEachMonthAccountAmounts(string $side, int $companyId, string $accountKey, string $currentMonth): array
     {
         $company = Company::select('fiscal_start_date', 'fiscal_end_date')
         ->where('id', $companyId)
         ->first();
 
-        $endOfTerm = date('Y', strtotime($company->fiscal_end_date)) . "-$endMonth";
+        $endOfTerm = date('Y', strtotime($company->fiscal_end_date)) . "-$currentMonth";
         $endOfTerm = Carbon::parse($endOfTerm)->endOfMonth()->toDateString();
 
-        $initialFiscalEndDate = new Carbon($company->fiscal_start_date);
-        $fiscalEndDate = $company->fiscal_start_date;
+        $fiscalStartDate = new Carbon($company->fiscal_start_date);
+        $fiscalTargetTerm = $company->fiscal_start_date;
 
         $totalAmounts = 0;
         $monthAccountAmounts = [];
-        for ($i=1; $fiscalEndDate < $endOfTerm; $i++) {
-            // $fiscalEndDate is subtracted in order to initialize.
-            $fiscalEndDate = $initialFiscalEndDate->subMonth($i);
-            $fiscalEndDate = $fiscalEndDate->addMonth($i)->endOfMonth()->toDateString();
+        for ($i=0; $fiscalTargetTerm < $endOfTerm; $i++) {
+            $fiscalTargetTerm = $fiscalStartDate->copy()->addMonth($i)->endOfMonth()->toDateString();
 
             $accounts = Account::select('name', 'account_key', 'classification')
                 ->where('company_id', $companyId)
@@ -105,7 +103,7 @@ class AccountAmount
                 ->where('j.company_id', $companyId)
                 ->where('a.company_id', $companyId)
                 ->where('a.account_key', $accountKey)
-                ->whereBetween('deal_date', [$company->fiscal_start_date,$fiscalEndDate ]);
+                ->whereBetween('deal_date', [$company->fiscal_start_date,$fiscalTargetTerm ]);
 
             $journals = MultipleJournal::from('multiple_journals as m')
                 ->select(
@@ -117,7 +115,7 @@ class AccountAmount
                 ->where('m.company_id', $companyId)
                 ->where('a.company_id', $companyId)
                 ->where('a.account_key', $accountKey)
-                ->whereBetween('deal_date', [$company->fiscal_start_date, $fiscalEndDate])
+                ->whereBetween('deal_date', [$company->fiscal_start_date, $fiscalTargetTerm])
                 ->UnionAll($subQuery);
 
             $totalAmounts = DB::query()->fromSub($journals, 'journals')
@@ -127,26 +125,40 @@ class AccountAmount
             
             $monthAccountAmounts[] = array(
                 'amount' => is_null($totalAmounts) ? 0 : (int)$totalAmounts->amount,
-                'month' => $fiscalEndDate
+                'month' => $fiscalTargetTerm
             );
         }
         
         return $monthAccountAmounts;
     }
 
-    public function getMonthAccountAmounts(int $companyId, string $accountKey, string $sideOfAccount)
+    private function getActualMonthAccountAmounts(array $debitAccountAmounts, array $creditAccountAmounts, string $sideOfAccount): array
     {
-        $thisMonth = date("m");
-        $debitAccountAmounts = $this->getEachMonthAccountAmounts('debit', $companyId, $accountKey, $thisMonth);
-        $creditAccountAmounts = $this->getEachMonthAccountAmounts('credit', $companyId, $accountKey, $thisMonth);
-       
         $actualAccountAmounts = [];
-        foreach ($debitAccountAmounts as $index => $debitAccountAmount) {
+        if ($sideOfAccount === 'debit') {
+            foreach ($debitAccountAmounts as $index => $debitAccountAmount) {
+                $actualAccountAmounts[] = array(
+                    'amount' => $debitAccountAmount['amount'] - $creditAccountAmounts[$index]['amount'],
+                    'month' => date('Y-m', strtotime($debitAccountAmount['month']))
+                );
+            }
+            return $actualAccountAmounts;
+        }
+        foreach ($creditAccountAmounts as $index => $creditAccountAmount) {
             $actualAccountAmounts[] = array(
-                'amount' => $debitAccountAmount['amount'] - $creditAccountAmounts[$index]['amount'],
-                'month' => date('Y-m', strtotime($debitAccountAmount['month']))
+                'amount' => $creditAccountAmount['amount'] - $debitAccountAmounts[$index]['amount'],
+                'month' => date('Y-m', strtotime($creditAccountAmount['month']))
             );
         }
+        return $actualAccountAmounts;
+    }
+
+    public function getMonthAccountAmounts(int $companyId, string $accountKey, string $sideOfAccount): array
+    {
+        $currentMonth = date("m");
+        $debitAccountAmounts = $this->getEachMonthAccountAmounts('debit', $companyId, $accountKey, $currentMonth);
+        $creditAccountAmounts = $this->getEachMonthAccountAmounts('credit', $companyId, $accountKey, $currentMonth);
+        $actualAccountAmounts = $this->getActualMonthAccountAmounts($debitAccountAmounts, $creditAccountAmounts, $sideOfAccount);
 
         return $actualAccountAmounts;
     }

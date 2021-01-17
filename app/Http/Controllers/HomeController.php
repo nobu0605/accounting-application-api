@@ -12,21 +12,21 @@ use App\Helpers\AccountAmount;
 
 class HomeController extends Controller
 {
-    public function getCashAccounts(int $companyId)
+    public function getCashEquivalentAccounts(int $companyId): array
     {
         $accountAmount = new AccountAmount;
         $cashAmount = $accountAmount->getActualAccountAmount($companyId, 'cash', 'debit');
         $savingsAccountsAmount = $accountAmount->getActualAccountAmount($companyId, 'savings_accounts', 'debit');
         $checkingAccountsAmount = $accountAmount->getActualAccountAmount($companyId, 'checking_accounts', 'debit');
-        $totalCashAmount = $cashAmount + $savingsAccountsAmount + $checkingAccountsAmount;
+        $totalCashEquivalentAmount = $cashAmount + $savingsAccountsAmount + $checkingAccountsAmount;
         
         $cashEachMonthAmounts = $accountAmount->getMonthAccountAmounts($companyId, 'cash', 'debit');
         $savingsAccountsEachMonthAmounts = $accountAmount->getMonthAccountAmounts($companyId, 'savings_accounts', 'debit');
         $checkingAccountsEachMonthAmounts = $accountAmount->getMonthAccountAmounts($companyId, 'checking_accounts', 'debit');
 
-        $totalCashEachMonthAmounts = [array('', '')];
+        $totalCashEquivalentEachMonthAmounts = [array('', '')];
         foreach ($cashEachMonthAmounts as $index => $cashEachMonthAmount) {
-            $totalCashEachMonthAmounts[] = array(
+            $totalCashEquivalentEachMonthAmounts[] = array(
                 date('Y-m', strtotime($cashEachMonthAmount['month'])),
                 $cashEachMonthAmount['amount'] +
                 $savingsAccountsEachMonthAmounts[$index]['amount'] +
@@ -37,9 +37,9 @@ class HomeController extends Controller
         return [
             'cash' => $cashAmount,
             'savings_accounts_amount' => $savingsAccountsAmount,
-            'total_cash_amount' => $totalCashAmount,
             'checking_accounts_amount' => $checkingAccountsAmount,
-            'total_cash_each_month_amounts' => $totalCashEachMonthAmounts
+            'total_cash_equivalent_amount' => $totalCashEquivalentAmount,
+            'total_cash_equivalent_each_month_amounts' => $totalCashEquivalentEachMonthAmounts
         ];
     }
 }
