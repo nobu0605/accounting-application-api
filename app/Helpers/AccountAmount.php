@@ -82,12 +82,12 @@ class AccountAmount
         $endOfTerm = Carbon::parse($endOfTerm)->endOfMonth()->toDateString();
 
         $fiscalStartDate = new Carbon($company->fiscal_start_date);
-        $fiscalTargetTerm = $company->fiscal_start_date;
+        $targetTerm = $company->fiscal_start_date;
 
         $totalAmounts = 0;
         $monthAccountAmounts = [];
-        for ($i=0; $fiscalTargetTerm < $endOfTerm; $i++) {
-            $fiscalTargetTerm = $fiscalStartDate->copy()->addMonth($i)->endOfMonth()->toDateString();
+        for ($i=0; $targetTerm < $endOfTerm; $i++) {
+            $targetTerm = $fiscalStartDate->copy()->addMonth($i)->endOfMonth()->toDateString();
 
             $accounts = Account::select('name', 'account_key', 'classification')
                 ->where('company_id', $companyId)
@@ -103,7 +103,7 @@ class AccountAmount
                 ->where('j.company_id', $companyId)
                 ->where('a.company_id', $companyId)
                 ->where('a.account_key', $accountKey)
-                ->whereBetween('deal_date', [$company->fiscal_start_date,$fiscalTargetTerm ]);
+                ->whereBetween('deal_date', [$company->fiscal_start_date,$targetTerm ]);
 
             $journals = MultipleJournal::from('multiple_journals as m')
                 ->select(
@@ -115,7 +115,7 @@ class AccountAmount
                 ->where('m.company_id', $companyId)
                 ->where('a.company_id', $companyId)
                 ->where('a.account_key', $accountKey)
-                ->whereBetween('deal_date', [$company->fiscal_start_date, $fiscalTargetTerm])
+                ->whereBetween('deal_date', [$company->fiscal_start_date, $targetTerm])
                 ->UnionAll($subQuery);
 
             $totalAmounts = DB::query()->fromSub($journals, 'journals')
@@ -125,7 +125,7 @@ class AccountAmount
             
             $monthAccountAmounts[] = array(
                 'amount' => is_null($totalAmounts) ? 0 : (int)$totalAmounts->amount,
-                'month' => $fiscalTargetTerm
+                'month' => $targetTerm
             );
         }
         
