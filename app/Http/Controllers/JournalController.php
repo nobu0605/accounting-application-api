@@ -132,13 +132,12 @@ class JournalController extends Controller
                 }
             };
             return response([
-            'message' => 'Registered successfully.'
-        ], 200);
+                'message' => 'Registered successfully.'
+            ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response([
                 'message' => 'Internal server error.'
             ], 500);
-            ;
         }
     }
 

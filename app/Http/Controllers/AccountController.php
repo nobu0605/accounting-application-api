@@ -7,11 +7,6 @@ use Illuminate\Http\Request;
 
 class AccountController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function getAllAccounts(int $companyId): object
     {
         $accounts = Account::select(
@@ -22,76 +17,60 @@ class AccountController extends Controller
             'classification',
             'is_default_account'
         )
-            ->where('company_id', $companyId)
-            ->orderBy('classification', 'asc')
-            ->get();
+        ->where('company_id', $companyId)
+        ->orderBy('classification', 'asc')
+        ->get();
 
         return $this->jsonResponse($accounts);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function registerAccount(Request $request): object
     {
-        //
+        try {
+            $existingAccount = Account::select(
+                'company_id',
+                'account_key',
+            )
+            ->where('company_id', $request['company_id'])
+            ->where('account_key', $request['account_key'])
+            ->get();
+
+            if (count($existingAccount) > 0) {
+                return response([
+                    'message' => 'This account is already registered.',
+                    'isDuplicate' => true
+                ], 400);
+            }
+            
+            Account::create([
+                'company_id' => $request['company_id'],
+                'name' => $request['name'],
+                'account_key' => $request['account_key'],
+                'classification' => $request['classification'],
+                'is_default_account' => false
+            ]);
+            return response([
+                'message' => 'Registered successfully.'
+            ], 200);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response([
+                'message' => 'Internal server error.'
+            ], 500);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function deleteAccount(Request $request)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Account  $account
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Account $account)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Account  $account
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Account $account)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Account  $account
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Account $account)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Account  $account
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Account $account)
-    {
-        //
+        try {
+            $account = Account::find($request['id']);
+            $account->delete();
+            return response([
+                'message' => 'Deleted successfully.'
+            ], 200);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response([
+                'message' => 'Internal server error.'
+            ], 500);
+        }
     }
 }
