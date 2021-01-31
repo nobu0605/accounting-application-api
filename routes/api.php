@@ -12,6 +12,9 @@ Route::middleware('auth:api')->group(function () {
     ->name('journals/new');
     Route::get('accounts/{company_id}', 'AccountController@getAllAccounts')
     ->name('accounts');
+    Route::post('accounts/new', 'AccountController@registerAccount')
+    ->name('accounts/new');
+    Route::delete('accounts/{id}', 'AccountController@deleteAccount');
     Route::get('report/{company_id}', 'ReportController@getFinancialStatementRatios')
     ->name('report');
     Route::get('financial-statement/{company_id}', 'FinancialStatementController@getFinancialStatement')
