@@ -150,7 +150,8 @@ class FinancialStatementController extends Controller
             'ordinary_income' => $ordinaryIncome,
             'income_before_income_taxes' => $incomeBeforeIncomeTaxes,
             'net_income' => $netIncome,
-            'account_amounts' => $actualAmounts
+            'account_amounts' => $actualAmounts,
+            'isFetched' => true
         ];
     }
 }
