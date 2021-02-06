@@ -63,6 +63,11 @@ class AccountController extends Controller
     {
         try {
             $account = Account::find($request['id']);
+            if (!$account) {
+                return response([
+                    'message' => 'Account not found.'
+                ], 400);
+            }
             $account->delete();
             return response([
                 'message' => 'Deleted successfully.'
