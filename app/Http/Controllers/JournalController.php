@@ -141,59 +141,23 @@ class JournalController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function deleteJournal(Request $request)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Journal  $journal
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Journal $journal)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Journal  $journal
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Journal $journal)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Journal  $journal
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Journal $journal)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Journal  $journal
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Journal $journal)
-    {
-        //
+        try {
+            $journal = Journal::find($request['id']);
+            if (!$journal) {
+                return response([
+                    'message' => 'Journal not found.'
+                ], 400);
+            }
+            $journal->delete();
+            return response([
+                'message' => 'Deleted successfully.'
+            ], 200);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response([
+                'message' => 'Internal server error.'
+            ], 500);
+        }
     }
 }
